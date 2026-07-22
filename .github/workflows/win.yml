@@ -126,7 +126,7 @@ jobs:
           GYP_MSVS_VERSION: 2026
         run: |
           cd %TBUILD%
-          %REPO_NAME%\Telegram\build\prepare\win.bat silent skip-debug ${{ matrix.qt }}
+          %REPO_NAME%\Telegram\build\prepare\win.bat silent skip-debug skip-dump-syms ${{ matrix.qt }}
 
       - name: Read configuration matrix.
         shell: bash
