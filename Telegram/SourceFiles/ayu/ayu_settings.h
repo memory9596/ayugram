@@ -436,6 +436,8 @@ public:
 	[[nodiscard]] bool cjkSpacingWhenEditing() const { return _cjkSpacingWhenEditing.current(); }
 	[[nodiscard]] bool showForwardOriginalDate() const { return _showForwardOriginalDate.current(); }
 	[[nodiscard]] const std::vector<AyuFeatures::LinkPreviewRules::Rule> &linkPreviewRules() const { return _linkPreviewRules.current(); }
+	[[nodiscard]] bool downloadBoost() const { return _downloadBoost.current(); }
+	[[nodiscard]] bool uploadBoost() const { return _uploadBoost.current(); }
 
 	void setSaveDeletedMessages(bool val);
 	void setSaveMessagesHistory(bool val);
@@ -530,6 +532,8 @@ public:
 	void setCjkSpacingWhenEditing(bool val);
 	void setShowForwardOriginalDate(bool val);
 	void setLinkPreviewRules(std::vector<AyuFeatures::LinkPreviewRules::Rule> val);
+	void setDownloadBoost(bool val);
+	void setUploadBoost(bool val);
 
 	[[nodiscard]] rpl::producer<bool> useGlobalGhostModeValue() const { return _useGlobalGhostMode.value(); }
 	[[nodiscard]] rpl::producer<bool> useGlobalGhostModeChanges() const { return _useGlobalGhostMode.changes(); }
@@ -707,6 +711,10 @@ public:
 	[[nodiscard]] rpl::producer<bool> streamerModeChanges() const { return _streamerMode.changes(); }
 	[[nodiscard]] rpl::producer<bool> showForwardOriginalDateChanges() const { return _showForwardOriginalDate.changes(); }
 	[[nodiscard]] rpl::producer<std::vector<AyuFeatures::LinkPreviewRules::Rule>> linkPreviewRulesValue() const { return _linkPreviewRules.value(); }
+	[[nodiscard]] rpl::producer<bool> downloadBoostValue() const { return _downloadBoost.value(); }
+	[[nodiscard]] rpl::producer<bool> downloadBoostChanges() const { return _downloadBoost.changes(); }
+	[[nodiscard]] rpl::producer<bool> uploadBoostValue() const { return _uploadBoost.value(); }
+	[[nodiscard]] rpl::producer<bool> uploadBoostChanges() const { return _uploadBoost.changes(); }
 
 	friend void to_json(nlohmann::json &j, const AyuSettings &s);
 	friend void from_json(const nlohmann::json &j, AyuSettings &s);
@@ -810,6 +818,8 @@ private:
 	rpl::variable<bool> _showForwardOriginalDate = false;
 	rpl::variable<std::vector<AyuFeatures::LinkPreviewRules::Rule>> _linkPreviewRules
 		= AyuFeatures::LinkPreviewRules::Defaults();
+	rpl::variable<bool> _downloadBoost = false;
+	rpl::variable<bool> _uploadBoost = false;
 
 	rpl::variable<bool> _useGlobalGhostMode = true;
 	std::map<uint64, std::unique_ptr<GhostModeAccountSettings>> _ghostAccounts;
