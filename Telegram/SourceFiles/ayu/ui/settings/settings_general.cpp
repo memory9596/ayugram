@@ -572,6 +572,25 @@ void BuildQoLToggles(SectionBuilder &builder, AyuSectionBuilder &ayu) {
 	});
 }
 
+void BuildTransferBoost(SectionBuilder &builder, AyuSectionBuilder &ayu) {
+	ayu.addSectionDivider();
+	builder.addSubsectionTitle(tr::ayu_TransferBoost());
+
+	ayu.addSettingToggle({
+		.id = u"ayu/downloadBoost"_q,
+		.title = tr::ayu_DownloadBoost(),
+		.getter = &AyuSettings::downloadBoost,
+		.setter = &AyuSettings::setDownloadBoost,
+	});
+
+	ayu.addSettingToggle({
+		.id = u"ayu/uploadBoost"_q,
+		.title = tr::ayu_UploadBoost(),
+		.getter = &AyuSettings::uploadBoost,
+		.setter = &AyuSettings::setUploadBoost,
+	});
+}
+
 const auto kMeta = BuildHelper({
 	.id = AyuGeneral::Id(),
 	.parentId = AyuMain::Id(),
@@ -582,6 +601,7 @@ const auto kMeta = BuildHelper({
 
 	builder.addSkip();
 	BuildQoLToggles(builder, ayu);
+	BuildTransferBoost(builder, ayu);
 	builder.addSkip();
 });
 

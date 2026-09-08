@@ -39,7 +39,11 @@ mtpFileLoader::mtpFileLoader(
 	fromCloud,
 	autoLoading,
 	cacheTag)
-, DownloadMtprotoTask(&session->downloader(), location, origin) {
+, DownloadMtprotoTask(
+	&session->downloader(),
+	location,
+	origin,
+	Storage::ChooseDownloadPartSize(loadSize, fullSize)) {
 	// WHY: a secret chat file is AES-IGE encrypted as one stream, so it can
 	// only be decrypted whole, which needs every part in memory at the end.
 	if (location.type() == StorageFileLocation::Type::Encrypted) {
@@ -144,7 +148,7 @@ int64 mtpFileLoader::takeNextRequestOffset() {
 	Expects(readyToRequest());
 
 	const auto result = _nextRequestOffset;
-	_nextRequestOffset += Storage::kDownloadPartSize;
+	_nextRequestOffset += partSize();
 	return result;
 }
 
@@ -212,8 +216,8 @@ void mtpFileLoader::startLoadingWithPartial(const QByteArray &data) {
 	Expects(data.startsWith("partial:"));
 
 	constexpr auto kPrefix = 8;
-	const auto parts = (data.size() - kPrefix) / Storage::kDownloadPartSize;
-	const auto use = parts * int64(Storage::kDownloadPartSize);
+	const auto parts = (data.size() - kPrefix) / partSize();
+	const auto use = parts * int64(partSize());
 	if (use > 0) {
 		_nextRequestOffset = use;
 		feedPart(0, QByteArray::fromRawData(data.data() + kPrefix, use));
