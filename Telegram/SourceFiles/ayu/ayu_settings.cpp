@@ -1322,6 +1322,17 @@ void AyuSettings::setCjkSpacingWhenEditing(bool val) {
 void AyuSettings::setShowForwardOriginalDate(bool val) {
 	if (_showForwardOriginalDate.current() == val) return;
 	_showForwardOriginalDate = val;
+}
+
+void AyuSettings::setDownloadBoost(bool val) {
+	if (_downloadBoost.current() == val) return;
+	_downloadBoost = val;
+	save();
+}
+
+void AyuSettings::setUploadBoost(bool val) {
+	if (_uploadBoost.current() == val) return;
+	_uploadBoost = val;
 	save();
 }
 
@@ -1436,6 +1447,8 @@ void to_json(nlohmann::json &j, const AyuSettings &s) {
 		{"cjkSpacingWhenEditing", s._cjkSpacingWhenEditing.current()},
 		{"showForwardOriginalDate", s._showForwardOriginalDate.current()},
 		{"linkPreviewRules", LinkPreviewRulesToJson(s._linkPreviewRules.current())},
+		{"downloadBoost", s._downloadBoost.current()},
+		{"uploadBoost", s._uploadBoost.current()},
 		{"messageShotSettings", s._messageShotSettings}
 	};
 }
@@ -1557,6 +1570,8 @@ void from_json(const nlohmann::json &j, AyuSettings &s) {
 	s._linkPreviewRules = (j.contains("linkPreviewRules") && j["linkPreviewRules"].is_array())
 		? LinkPreviewRulesFromJson(j["linkPreviewRules"])
 		: defaults._linkPreviewRules.current();
+	s._downloadBoost = j.value("downloadBoost", defaults._downloadBoost.current());
+	s._uploadBoost = j.value("uploadBoost", defaults._uploadBoost.current());
 
 	if (j.contains("messageShotSettings") && j["messageShotSettings"].is_object()) {
 		j["messageShotSettings"].get_to(s._messageShotSettings);
