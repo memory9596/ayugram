@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         arch: [x64]
-        qt: [""]
+        qt: ["qt5"]
         generator: ["Ninja Multi-Config"]
 
     env:
