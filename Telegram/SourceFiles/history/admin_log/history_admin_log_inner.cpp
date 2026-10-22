@@ -81,9 +81,18 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include <QtWidgets/QApplication>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QClipboard>
+#include <QtGui/QScreen>
 
 namespace AdminLog {
 namespace {
+
+[[nodiscard]] QPoint GlobalPosition(QMouseEvent *e) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	return e->globalPosition().toPoint();
+#else // Qt >= 6.0
+	return e->globalPos();
+#endif // Qt >= 6.0
+}
 
 // If we require to support more admins we'll have to rewrite this anyway.
 constexpr auto kMaxChannelAdmins = 200;
@@ -2477,7 +2486,7 @@ void InnerWidget::showUnbanMenu(
 			}
 			return base::EventFilterResult::Continue;
 		}
-		const auto global = mouse->globalPosition().toPoint();
+		const auto global = GlobalPosition(mouse);
 		const auto insideMenu = menu->geometry().contains(global);
 		const auto insideParent = weakParent
 			&& weakParent->geometry().contains(global);
@@ -2491,7 +2500,7 @@ void InnerWidget::showUnbanMenu(
 		}
 		if (weakParent) {
 			const auto menuWidget = weakParent->menu();
-			const auto globalPoint = mouse->globalPosition().toPoint();
+			const auto globalPoint = GlobalPosition(mouse);
 			const auto local = menuWidget->mapFromGlobal(globalPoint);
 			const auto overItem = (menuWidget->childAt(local) != nullptr);
 			if (overItem || (e->type() == QEvent::MouseMove)) {
@@ -2499,7 +2508,7 @@ void InnerWidget::showUnbanMenu(
 					e->type(),
 					local,
 					menuWidget->window()->mapFromGlobal(globalPoint),
-					mouse->globalPosition(),
+					GlobalPosition(mouse),
 					mouse->button(),
 					mouse->buttons(),
 					mouse->modifiers());

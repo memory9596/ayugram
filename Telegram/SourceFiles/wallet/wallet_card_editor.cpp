@@ -284,6 +284,14 @@ struct Frame {
 	).toAlignedRect();
 }
 
+[[nodiscard]] QPoint GlobalPosition(QMouseEvent *e) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	return e->globalPosition().toPoint();
+#else // Qt >= 6.0
+	return e->globalPos();
+#endif // Qt >= 6.0
+}
+
 } // namespace
 
 struct CardStickerEditor::Press {
@@ -434,20 +442,20 @@ base::EventFilterResult CardStickerEditor::mousePress(
 	cancelPress();
 	finishTravel();
 	const auto fold = _host.fold();
-	const auto global = e->globalPosition();
+	const auto global = GlobalPosition(e);
 	const auto point = bodyPoint(global);
 	if (OnChip(fold, point)) {
 		// Deselecting may move the input, so let it take this press first.
 		crl::on_main(this, [=] { select(QString()); });
 		return Result::Continue;
 	} else if (handleAt(fold, point)) {
-		startPress(global.toPoint(), point, _selected, true);
+		startPress(global, point, _selected, true);
 		return Result::Cancel;
 	}
 	const auto address = stickerAt(fold, point);
 	if (!address.isEmpty()) {
 		select(address);
-		startPress(global.toPoint(), point, address, false);
+		startPress(global, point, address, false);
 		return Result::Cancel;
 	} else if (!_selected.isEmpty()) {
 		select(QString());
@@ -466,8 +474,8 @@ base::EventFilterResult CardStickerEditor::mouseMove(
 		cancelPress();
 		return Result::Cancel;
 	}
-	const auto global = e->globalPosition();
-	if (Crossed(_press->origin, global.toPoint())) {
+	const auto global = GlobalPosition(e);
+	if (Crossed(_press->origin, global)) {
 		_press->crossed = true;
 	}
 	if (!_press->crossed) {
@@ -500,8 +508,8 @@ base::EventFilterResult CardStickerEditor::mouseRelease(
 		cancelPress();
 		return Result::Cancel;
 	}
-	const auto global = e->globalPosition();
-	if (Crossed(_press->origin, global.toPoint())) {
+	const auto global = GlobalPosition(e);
+	if (Crossed(_press->origin, global)) {
 		_press->crossed = true;
 	}
 	const auto handle = _press->handle && _press->crossed;
@@ -1087,7 +1095,7 @@ QRectF CardStickerEditor::listsArea() const {
 
 QPointF CardStickerEditor::bodyPoint(QPointF global) const {
 	const auto body = static_cast<const QWidget*>(_host.body.get());
-	return body->mapFromGlobal(global);
+	return body->mapFromGlobal(global.toPoint());
 }
 
 OwnCard &CardStickerEditor::ownCard() const {
